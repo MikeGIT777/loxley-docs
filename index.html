@@ -45,39 +45,53 @@ body {
 }
 .wrap { max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 0; }
 
-/* The hero. Two phones, angled and overlapping, with the claim under them. */
-.hero { text-align: center; margin-bottom: 2.2rem; }
+/* The hero. Copy on the left, the app on the right. */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 20rem);
+  gap: 2.5rem; align-items: center;
+  margin-bottom: 2.6rem;
+}
 .wordmark {
   font-size: .95rem; font-weight: 800; letter-spacing: .18em;
-  text-transform: uppercase; opacity: .75; margin-bottom: 2rem;
+  text-transform: uppercase; opacity: .75; margin: 0 0 1.2rem;
 }
-.phones {
-  display: flex; justify-content: center; align-items: flex-start;
-  gap: 0; margin-bottom: 2.2rem; perspective: 1200px;
+.badge {
+  display: inline-block; font-size: .78rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: .34rem .8rem; margin-bottom: 1.1rem; opacity: .8;
 }
-.phone {
-  width: min(41vw, 232px);
-  border-radius: 30px;
-  padding: 7px;
-  background: linear-gradient(160deg, #3a3f42, #16191b 55%, #2c3134);
-  box-shadow: 0 22px 44px rgba(0, 0, 0, .30), 0 3px 8px rgba(0, 0, 0, .22);
-  flex: none;
-}
-.phone img { display: block; width: 100%; border-radius: 24px; }
-.phone.left { transform: rotate(-7deg) translateY(14px); margin-right: -7%; z-index: 2; }
-.phone.right { transform: rotate(7deg); }
 .claim {
-  font-size: clamp(2rem, 7.2vw, 3.1rem); line-height: 1.02;
-  letter-spacing: -.025em; font-weight: 800; margin: 0 0 .7rem;
+  font-size: clamp(2rem, 5.4vw, 3.1rem); line-height: 1.03;
+  letter-spacing: -.025em; font-weight: 800; margin: 0 0 .5rem;
 }
 .claim em { font-style: normal; color: var(--pink); }
 @media (prefers-color-scheme: dark) { .claim em { color: #f07fac; } }
-.kicker { font-size: 1.12rem; max-width: 32rem; margin: 0 auto 1.4rem; opacity: .88; }
-.badge {
-  display: inline-block; font-size: .82rem; font-weight: 700;
-  letter-spacing: .08em; text-transform: uppercase;
-  border: 1px solid var(--line); border-radius: 999px;
-  padding: .4rem .9rem; margin-bottom: 1.4rem; opacity: .8;
+.subclaim {
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem); font-weight: 700;
+  letter-spacing: -.01em; margin: 0 0 1rem; opacity: .9;
+}
+.kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
+
+/* Two phones: the back one peeking out behind the front one, never covering
+   it. The overlap is small on purpose. Two screens hiding each other tells
+   you less than one screen would. */
+.phones { position: relative; padding: 1.2rem .5rem 1.2rem 0; }
+.phone {
+  border-radius: 26px; padding: 5px;
+  background: linear-gradient(160deg, #3a3f42, #16191b 58%, #2c3134);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, .26), 0 2px 6px rgba(0, 0, 0, .2);
+}
+.phone img { display: block; width: 100%; border-radius: 21px; }
+.phone.back {
+  position: absolute; top: 0; right: 0;
+  width: 62%; transform: rotate(6deg); opacity: .96;
+}
+.phone.front { position: relative; width: 74%; transform: rotate(-3deg); z-index: 2; }
+@media (max-width: 46rem) {
+  .hero { grid-template-columns: 1fr; gap: 1.6rem; }
+  .phones { max-width: 22rem; margin: 0 auto; }
 }
 .card {
   background: var(--card);
@@ -127,24 +141,26 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
 <div class="wrap">
 
 <div class="hero">
-  <p class="wordmark">Loxley</p>
+  <div class="hero-copy">
+    <p class="wordmark">Loxley</p>
+    <span class="badge">iPhone app</span>
+    <h1 class="claim">Together we <em>change anything</em>.</h1>
+    <p class="subclaim">Together we are Loxley.</p>
+    <p class="kicker">One person not buying something is a preference. Fifty thousand people not buying the same thing, and saying so out loud, is a number a company has to answer for.</p>
+    <a class="cta" href="mailto:mikejrogers1@gmail.com?subject=Loxley%20beta">Ask for a beta invite</a>
+    <p class="note">Loxley is in testing on iPhone and is not on the App Store yet.</p>
+  </div>
 
   <div class="phones">
-    <div class="phone left">
-      <img src="img/screen-list.png" width="331" height="720"
-           alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
-    </div>
-    <div class="phone right">
+    <div class="phone back">
       <img src="img/screen-detail.png" width="331" height="720"
            alt="A boycott in the Loxley app, showing the demand letter sent to The Coca-Cola Company and what the group has withheld so far.">
     </div>
+    <div class="phone front">
+      <img src="img/screen-list.png" width="331" height="720"
+           alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
+    </div>
   </div>
-
-  <span class="badge">iPhone app</span>
-  <h1 class="claim">Together we can <em>change anything</em>.</h1>
-  <p class="kicker">One person not buying something is a preference. Fifty thousand people not buying the same thing, and saying so out loud, is a number a company has to answer for.</p>
-  <a class="cta" href="mailto:mikejrogers1@gmail.com?subject=Loxley%20beta">Ask for a beta invite</a>
-  <p class="note">Loxley is in testing on iPhone and is not on the App Store yet.</p>
 </div>
 
 <div class="card">
