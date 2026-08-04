@@ -1,28 +1,162 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Loxley</title><style>
-:root { color-scheme: light dark; }
-body { margin: 0 auto; max-width: 42rem; padding: 3rem 1.25rem 5rem;
-  font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  color: #1f2624; background: #fbfaf5; }
-@media (prefers-color-scheme: dark) { body { color: #e8e6df; background: #161a19; } }
-h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .5rem; }
-h2 { font-size: 1.25rem; margin: 2.5rem 0 .75rem; }
-h3 { font-size: 1.05rem; margin: 1.75rem 0 .5rem; }
-a { color: #2a66c8; } @media (prefers-color-scheme: dark) { a { color: #7fb0ff; } }
-code { background: rgba(127,127,127,.16); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
-ul { padding-left: 1.25rem; }
-li { margin: .35rem 0; }
-hr { border: 0; border-top: 1px solid rgba(127,127,127,.3); margin: 2.5rem 0; }
-nav { margin-bottom: 2.5rem; font-size: .95rem; }
-nav a { margin-right: 1rem; }
-.updated { opacity: .65; font-size: .95rem; }
-</style></head><body><nav><a href="index.html">Loxley</a><a href="privacy-policy.html">Privacy</a><a href="terms-of-use.html">Terms</a><a href="support.html">Support</a><a href="community-guidelines.html">Community rules</a></nav><h1>Loxley</h1>
-<p>Loxley organises collective consumer boycotts. Members propose a boycott by naming a company from a register of SEC filers and an issue from a fixed list, write what the company has to change and by when, and a moderator reads it before it runs. Joining is the whole commitment.</p>
-<h2>Documents</h2>
-<ul>
-<li><a href="privacy-policy.html">Privacy Policy</a></li>
-<li><a href="terms-of-use.html">Terms of Use</a></li>
-<li><a href="support.html">Support</a></li>
-<li><a href="community-guidelines.html">Community Rules</a></li>
-</ul>
-<h2>Contact</h2>
-<p><a href="mailto:mikejrogers1@gmail.com">mikejrogers1@gmail.com</a></p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loxley: Collective Boycotts</title>
+<meta name="description" content="Loxley organises collective consumer boycotts and counts what the group actually withholds. Propose a boycott, a moderator reads it, it runs. Joining is the whole commitment.">
+<meta property="og:title" content="Loxley: Collective Boycotts">
+<meta property="og:description" content="There is probably already something you have stopped buying. This is where you say what it is and find the people who agree.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mikegit777.github.io/loxley-docs/">
+<style>
+:root {
+  --ink: #1f2624;
+  --blue: #8abac7;
+  --sand: #faebbd;
+  --pink: #e66699;
+  --coral: #b34f54;
+  --green: #4a7d7d;
+  --line: rgba(31, 38, 36, .14);
+  --card: rgba(250, 247, 235, .78);
+  --grid: rgba(255, 255, 255, .17);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #edeeeb;
+    --blue: #08080a;
+    --sand: #212123;
+    --line: rgba(255, 255, 255, .10);
+    --card: rgba(44, 46, 47, .82);
+    --grid: rgba(255, 255, 255, .05);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background-color: var(--blue);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 36px 36px;
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem 0; }
+nav {
+  display: flex; flex-wrap: wrap; gap: 1.1rem;
+  font-size: .95rem; font-weight: 600; margin-bottom: 2rem;
+}
+nav a { color: var(--ink); opacity: .7; text-decoration: none; }
+nav a:hover { opacity: 1; text-decoration: underline; }
+nav a.brand { opacity: 1; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.6rem 1.5rem;
+  margin-bottom: 1.1rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .10);
+}
+h1 { font-size: clamp(2.1rem, 7.5vw, 3.1rem); line-height: 1.05; margin: 0 0 .8rem; letter-spacing: -.02em; }
+h2 { font-size: 1.4rem; line-height: 1.2; margin: 0 0 .7rem; letter-spacing: -.01em; }
+p { margin: 0 0 1rem; }
+p:last-child, ul:last-child { margin-bottom: 0; }
+.lede { font-size: 1.15rem; }
+ul { padding-left: 1.15rem; margin: 0 0 1rem; }
+li { margin: .5rem 0; }
+a { color: inherit; }
+.cta {
+  display: inline-block; background: var(--pink); color: #1f2624;
+  font-weight: 700; text-decoration: none;
+  padding: .85rem 1.5rem; border-radius: 8px; margin-top: .3rem;
+}
+.cta:hover { filter: brightness(.95); }
+.note { font-size: .95rem; opacity: .7; margin-top: .8rem; }
+.rules strong { display: block; }
+.figure {
+  font-variant-numeric: tabular-nums;
+  border-top: 1px solid var(--line);
+  padding-top: .7rem; margin-top: .7rem;
+  display: flex; justify-content: space-between; gap: 1rem; align-items: baseline;
+}
+.figure span:last-child { font-weight: 700; text-align: right; }
+.coral { color: var(--coral); }
+.green { color: var(--green); }
+@media (prefers-color-scheme: dark) {
+  .coral { color: #d98488; }
+  .green { color: #8fc2c2; }
+}
+footer { margin-top: 2.5rem; background: var(--sand); border-top: 1px solid var(--line); }
+.footer-inner { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem 3rem; font-size: .95rem; }
+footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1.1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <a class="brand" href="index.html">Loxley</a>
+  <a href="privacy-policy.html">Privacy</a>
+  <a href="terms-of-use.html">Terms</a>
+  <a href="community-guidelines.html">Community rules</a>
+  <a href="support.html">Support</a>
+</nav>
+
+<div class="card">
+  <h1>Collective boycotts, counted.</h1>
+  <p class="lede">There is probably already something you have stopped buying. This is where you say what it is and find the people who agree.</p>
+  <p>Propose a boycott, a moderator reads it, and it runs. Joining is the whole commitment. There is no pledge drive and nothing to vote on.</p>
+  <a class="cta" href="mailto:mikejrogers1@gmail.com?subject=Loxley%20beta">Ask for a beta invite</a>
+  <p class="note">Loxley is in testing on iPhone and is not on the App Store yet.</p>
+</div>
+
+<div class="card">
+  <h2>How it works</h2>
+  <p>You pick the company out of a register of large companies and the issue out of a fixed list, then write what the company has to do and by when. Naming a company from a register rather than typing it is what lets everyone proposing the same thing end up in one campaign instead of four hundred near-duplicates.</p>
+  <p>A moderator reads it before anyone else sees what you wrote. Then it runs for at least ninety days, because what makes pressure transmit is outlasting a retail buying review, not one soft month.</p>
+</div>
+
+<div class="card">
+  <h2>The uncomfortable part, first</h2>
+  <p>Direct lost sales from consumer boycotts are almost always negligible against company revenue. That is not a Loxley problem, it is the historical record. The boycotts that changed corporate behaviour did it through attention and reputation, with the withheld spending as the organising device rather than the weapon.</p>
+  <p>So Loxley does not shrink the number until it looks impressive. Every figure is computed from stated assumptions, the percentage of a whole company sits next to the friendlier percentage of a single brand line, and where a figure does not exist the app says it does not know rather than filling the gap.</p>
+  <div class="figure"><span>A missing input</span><span class="coral">produces a missing number</span></div>
+  <div class="figure"><span>Percentages</span><span class="green">round down, always</span></div>
+</div>
+
+<div class="card rules">
+  <h2>The rules</h2>
+  <ul>
+    <li><strong>Large companies only, never a local business.</strong> The size floor is arithmetic on a company's own revenue, not somebody's judgment.</li>
+    <li><strong>Criticise companies, never individual people.</strong> Named individuals are out of scope.</li>
+    <li><strong>No hate, harassment, threats, or violence.</strong> Reports are actioned within 24 hours.</li>
+    <li><strong>Not buying is the only tactic here.</strong> Loxley supports declining to buy something over how it is made or sold, and nothing else.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>What Loxley keeps</h2>
+  <p>Browsing needs no account at all. Joining or proposing needs Sign in with Apple, because a boycott is only worth anything if the number of people in it is real.</p>
+  <p>Apple is asked for nothing: no name, no email address, not even a private relay address. What Loxley receives is an opaque identifier Apple creates for this app alone, which cannot be matched to you in any other app. What is attached to it is what you did here, and you can delete all of it, and the identifier, from inside the app.</p>
+  <p><a href="privacy-policy.html">Read the privacy policy</a>.</p>
+</div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <ul>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms-of-use.html">Terms of Use</a></li>
+      <li><a href="community-guidelines.html">Community Rules</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="mailto:mikejrogers1@gmail.com">mikejrogers1@gmail.com</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
