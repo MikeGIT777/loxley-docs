@@ -77,8 +77,9 @@ body {
 /* Apple's own iPhone 17 Pro bezels from Apple Design Resources, with the
    screenshots clipped to the exact shape of the glass. Apple ships these
    straight on only, so the angle is a 3D transform here: perspective plus a
-   rotation about the vertical axis, which foreshortens the near edge the way
-   a real photograph would. */
+   rotation about the vertical axis, which foreshortens the far edge the way
+   a real photograph would. The rotation is negative so the screens turn back
+   towards the copy on the left rather than away from it. */
 .phones {
   display: flex; justify-content: center; align-items: center;
   padding: 1.6rem 0; perspective: 1400px;
@@ -106,19 +107,19 @@ body {
 .device i:nth-child(7) { transform: translateZ(-20px); background: #161a24; }
 .device i:nth-child(8) { transform: translateZ(-23px); background: #12151e; }
 .device.back {
-  transform: rotateY(24deg) rotateX(5deg) rotateZ(-5deg) translateY(-14px) scale(.9);
+  transform: rotateY(-24deg) rotateX(5deg) rotateZ(5deg) translateY(-14px);
   z-index: 1;
 }
 .device.front {
-  margin-left: -74px;
-  transform: rotateY(18deg) rotateX(3deg) rotateZ(-4deg);
+  margin-right: -74px;
+  transform: rotateY(-18deg) rotateX(3deg) rotateZ(4deg);
   z-index: 2;
 }
 @media (max-width: 46rem) {
   .hero { grid-template-columns: 1fr; gap: 1.4rem; }
   .device { width: 190px; }
   .device i { border-radius: 37px; }
-  .device.front { margin-left: -60px; }
+  .device.front { margin-right: -60px; }
 }
 .card {
   background: var(--card);
@@ -195,18 +196,18 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   </div>
 
   <div class="phones">
-    <div class="device back">
-      <div class="screen">
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        <img src="img/device-detail.png" width="620" height="1268"
-             alt="A boycott in the Loxley app, showing the demand letter addressed to The Coca-Cola Company and what the group has withheld so far.">
-      </div>
-    </div>
     <div class="device front">
       <div class="screen">
         <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         <img src="img/device-list.png" width="620" height="1268"
              alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
+      </div>
+    </div>
+    <div class="device back">
+      <div class="screen">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <img src="img/device-detail.png" width="620" height="1268"
+             alt="A boycott in the Loxley app, showing the demand letter addressed to The Coca-Cola Company and what the group has withheld so far.">
       </div>
     </div>
   </div>
