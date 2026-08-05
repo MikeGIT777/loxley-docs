@@ -84,10 +84,27 @@ body {
   padding: 1.6rem 0; perspective: 1400px;
 }
 .device { flex: none; width: 232px; transform-style: preserve-3d; }
+.device .screen { position: relative; transform-style: preserve-3d; }
 .device img {
-  display: block; width: 100%; height: auto;
+  display: block; position: relative; width: 100%; height: auto;
   filter: drop-shadow(0 26px 40px rgba(0, 0, 0, .34)) drop-shadow(0 4px 10px rgba(0, 0, 0, .22));
 }
+/* The bezel is a flat front view, so once it is rotated it reads as a card
+   rather than a phone. These are the sides: copies of the body silhouette
+   pushed back in Z, so the rotation exposes a real edge with the chamfer
+   catching the light. Inset and radius match the alpha channel of the PNG. */
+.device i {
+  position: absolute; top: .71%; bottom: .79%; left: 1.77%; right: 1.77%;
+  border-radius: 45px; background: #1b1f2b;
+}
+.device i:nth-child(1) { transform: translateZ(-2px); background: #6d7589; }
+.device i:nth-child(2) { transform: translateZ(-5px); background: #3d4457; }
+.device i:nth-child(3) { transform: translateZ(-8px); background: #2b3141; }
+.device i:nth-child(4) { transform: translateZ(-11px); }
+.device i:nth-child(5) { transform: translateZ(-14px); }
+.device i:nth-child(6) { transform: translateZ(-17px); }
+.device i:nth-child(7) { transform: translateZ(-20px); background: #161a24; }
+.device i:nth-child(8) { transform: translateZ(-23px); background: #12151e; }
 .device.back {
   transform: rotateY(24deg) rotateX(5deg) rotateZ(-5deg) translateY(-14px) scale(.9);
   z-index: 1;
@@ -100,6 +117,7 @@ body {
 @media (max-width: 46rem) {
   .hero { grid-template-columns: 1fr; gap: 1.4rem; }
   .device { width: 190px; }
+  .device i { border-radius: 37px; }
   .device.front { margin-left: -60px; }
 }
 .card {
@@ -179,12 +197,14 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   <div class="phones">
     <div class="device back">
       <div class="screen">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         <img src="img/device-detail.png" width="620" height="1268"
              alt="A boycott in the Loxley app, showing the demand letter addressed to The Coca-Cola Company and what the group has withheld so far.">
       </div>
     </div>
     <div class="device front">
       <div class="screen">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         <img src="img/device-list.png" width="620" height="1268"
              alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
       </div>
