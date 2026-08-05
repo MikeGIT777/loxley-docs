@@ -74,22 +74,33 @@ body {
 }
 .kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
 
-/* Apple's own iPhone 17 Pro product bezels, from Apple Design Resources, with
-   the screenshots composited into the screen window at native resolution. The
-   frame is part of the image rather than CSS around it, so it is Apple's
-   rendering of the hardware and not my approximation of it. */
-.phones { display: flex; justify-content: center; align-items: center; padding: 1rem 0; }
-.device { flex: none; width: 210px; }
+/* Apple's own iPhone 17 Pro bezels from Apple Design Resources, with the
+   screenshots clipped to the exact shape of the glass. Apple ships these
+   straight on only, so the angle is a 3D transform here: perspective plus a
+   rotation about the vertical axis, which foreshortens the near edge the way
+   a real photograph would. */
+.phones {
+  display: flex; justify-content: center; align-items: center;
+  padding: 1.6rem 0; perspective: 1400px;
+}
+.device { flex: none; width: 232px; transform-style: preserve-3d; }
 .device img {
   display: block; width: 100%; height: auto;
-  filter: drop-shadow(0 20px 34px rgba(0, 0, 0, .32)) drop-shadow(0 3px 8px rgba(0, 0, 0, .2));
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, .34)) drop-shadow(0 4px 10px rgba(0, 0, 0, .22));
 }
-.device.back { transform: rotate(6deg) translateY(-8px); z-index: 1; }
-.device.front { margin-left: -54px; transform: rotate(-4deg); z-index: 2; }
+.device.back {
+  transform: rotateY(24deg) rotateX(5deg) rotateZ(-5deg) translateY(-14px) scale(.9);
+  z-index: 1;
+}
+.device.front {
+  margin-left: -74px;
+  transform: rotateY(18deg) rotateX(3deg) rotateZ(-4deg);
+  z-index: 2;
+}
 @media (max-width: 46rem) {
   .hero { grid-template-columns: 1fr; gap: 1.4rem; }
-  .device { width: 178px; }
-  .device.front { margin-left: -44px; }
+  .device { width: 190px; }
+  .device.front { margin-left: -60px; }
 }
 .card {
   background: var(--card);
@@ -168,8 +179,8 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   <div class="phones">
     <div class="device back">
       <div class="screen">
-        <img src="img/device-evidence.png" width="620" height="1268"
-             alt="The Loxley app showing Coca-Cola's reported revenue with the SEC filing it was read from, and the public sources behind the boycott.">
+        <img src="img/device-detail.png" width="620" height="1268"
+             alt="A boycott in the Loxley app, showing the demand letter addressed to The Coca-Cola Company and what the group has withheld so far.">
       </div>
     </div>
     <div class="device front">
