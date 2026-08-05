@@ -68,8 +68,9 @@ body {
 @media (prefers-color-scheme: dark) { .claim em { color: #f07fac; } }
 .subclaim {
   font-size: clamp(1.15rem, 2.6vw, 1.5rem); font-weight: 700;
-  letter-spacing: -.01em; margin: 0 0 1rem; opacity: .9;
+  letter-spacing: -.01em; margin: 0 0 .3rem; opacity: .9;
 }
+.subclaim + .claim { margin-top: .7rem; }
 .kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
 .rally { font-weight: 700; opacity: 1; }
 
@@ -155,9 +156,9 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
 
 <div class="hero">
   <div class="hero-copy">
+    <p class="subclaim">Together we can take our power back.</p>
+    <p class="subclaim">Together we can change anything.</p>
     <h1 class="claim">Together we are <em>Loxley</em>.</h1>
-    <p class="subclaim">Together we change anything.</p>
-    <p class="kicker rally">It is time to take our power back.</p>
     <a class="cta" href="mailto:mikejrogers1@gmail.com?subject=Loxley%20beta">Ask for a beta invite</a>
     <p class="note">Loxley is in testing on iPhone and is not on the App Store yet.</p>
   </div>
