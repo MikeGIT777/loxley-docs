@@ -74,24 +74,65 @@ body {
 }
 .kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
 
-/* Two phones, sized in pixels rather than as a share of a column, so they
-   cannot outgrow the space they sit in. The overlap is a sliver: two screens
-   hiding each other tells a visitor less than one screen would. */
+/* iPhone frames, drawn rather than photographed: titanium bezel, edge
+   buttons, a glass highlight. Every measurement is a ratio of the device
+   width, so one variable resizes the whole thing and it stays sharp at any
+   size. The Dynamic Island and status bar come from the screenshot itself. */
 .phones {
   display: flex; justify-content: center; align-items: center;
   padding: 1rem 0;
 }
-.phone {
-  flex: none;
-  border-radius: 24px; padding: 5px;
-  background: linear-gradient(160deg, #3a3f42, #16191b 58%, #2c3134);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, .26), 0 2px 6px rgba(0, 0, 0, .2);
+.device {
+  --w: 218px;
+  --r: calc(var(--w) * .155);
+  --bezel: calc(var(--w) * .035);
+  position: relative; flex: none;
+  width: var(--w);
+  padding: var(--bezel);
+  border-radius: calc(var(--r) + var(--bezel));
+  background:
+    linear-gradient(148deg, #6f757a 0%, #2a2e31 14%, #14171a 42%, #23272a 72%, #71777c 100%);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, .30),
+    0 4px 10px rgba(0, 0, 0, .22),
+    inset 0 0 0 1px rgba(255, 255, 255, .16);
 }
-.phone img { display: block; width: 100%; height: auto; border-radius: 20px; }
-.phone.back { width: 200px; transform: rotate(6deg) translateY(-10px); z-index: 1; }
-.phone.front { width: 200px; margin-left: -54px; transform: rotate(-4deg); z-index: 2; }
+.device .screen {
+  position: relative; overflow: hidden;
+  border-radius: var(--r);
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55);
+}
+.device img { display: block; width: 100%; height: auto; }
+/* The sheen across the glass. */
+.device .screen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(112deg, rgba(255,255,255,.16) 0 22%, rgba(255,255,255,0) 46%);
+}
+/* Edge buttons. */
+.device::before, .device::after {
+  content: ""; position: absolute; border-radius: 2px;
+  background: linear-gradient(180deg, #4c5257, #23272a);
+}
+.device::before {
+  left: calc(var(--w) * -.012); top: 22%;
+  width: calc(var(--w) * .014); height: 13%;
+}
+.device::after {
+  right: calc(var(--w) * -.012); top: 26%;
+  width: calc(var(--w) * .014); height: 17%;
+}
+.device .btn-action {
+  position: absolute; left: calc(var(--w) * -.012); top: 15%;
+  width: calc(var(--w) * .014); height: 5.5%;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #4c5257, #23272a);
+}
+.device.back { transform: rotate(6deg) translateY(-8px); z-index: 1; }
+.device.front { margin-left: calc(var(--w) * -.26); transform: rotate(-4deg); z-index: 2; }
 @media (max-width: 46rem) {
   .hero { grid-template-columns: 1fr; gap: 1.4rem; }
+  .device { --w: 190px; }
 }
 .card {
   background: var(--card);
@@ -168,13 +209,19 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   </div>
 
   <div class="phones">
-    <div class="phone back">
-      <img src="img/screen-detail.png" width="331" height="720"
-           alt="A boycott in the Loxley app, showing the demand letter sent to The Coca-Cola Company and what the group has withheld so far.">
+    <div class="device back">
+      <span class="btn-action"></span>
+      <div class="screen">
+        <img src="img/evidence.png" width="414" height="900"
+             alt="The Loxley app showing Coca-Cola's reported revenue with the SEC filing it was read from, and the public sources behind the boycott.">
+      </div>
     </div>
-    <div class="phone front">
-      <img src="img/screen-list.png" width="331" height="720"
-           alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
+    <div class="device front">
+      <span class="btn-action"></span>
+      <div class="screen">
+        <img src="img/list.png" width="414" height="900"
+             alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
+      </div>
     </div>
   </div>
 </div>
