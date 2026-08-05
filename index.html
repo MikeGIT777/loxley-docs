@@ -67,10 +67,11 @@ body {
 .claim em { font-style: normal; color: var(--pink); }
 @media (prefers-color-scheme: dark) { .claim em { color: #f07fac; } }
 .subclaim {
-  font-size: clamp(1.15rem, 2.6vw, 1.5rem); font-weight: 700;
-  letter-spacing: -.01em; margin: 0 0 .3rem; opacity: .9;
+  font-size: clamp(1rem, 2vw, 1.08rem); font-weight: 700;
+  letter-spacing: -.01em; margin: 0 0 .15rem; opacity: .85;
+  text-wrap: balance;
 }
-.subclaim + .claim { margin-top: .7rem; }
+.subclaim + .claim { margin-top: .9rem; }
 .kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
 .rally { font-weight: 700; opacity: 1; }
 
@@ -145,7 +146,6 @@ a { color: inherit; }
 }
 .cta:hover { filter: brightness(.95); }
 .hero-copy .cta { margin-top: 1.1rem; }
-.note { font-size: .95rem; opacity: .7; margin-top: .8rem; }
 .rules strong { display: block; }
 footer { margin-top: 2.5rem; background: var(--sand); border-top: 1px solid var(--line); }
 .footer-inner { max-width: 46rem; margin: 0 auto; padding: 2rem 1.25rem 3rem; font-size: .95rem; }
@@ -161,7 +161,6 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
     <p class="subclaim">Together we can change anything.</p>
     <h1 class="claim">Together we are <em>Loxley</em>.</h1>
     <a class="cta" href="mailto:mikejrogers1@gmail.com?subject=Loxley%20beta">Ask for a beta invite</a>
-    <p class="note">Loxley is in testing on iPhone and is not on the App Store yet.</p>
   </div>
 
   <div class="phones">
