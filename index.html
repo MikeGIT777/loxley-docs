@@ -74,65 +74,22 @@ body {
 }
 .kicker { font-size: 1.05rem; margin: 0 0 1.3rem; opacity: .85; }
 
-/* iPhone frames, drawn rather than photographed: titanium bezel, edge
-   buttons, a glass highlight. Every measurement is a ratio of the device
-   width, so one variable resizes the whole thing and it stays sharp at any
-   size. The Dynamic Island and status bar come from the screenshot itself. */
-.phones {
-  display: flex; justify-content: center; align-items: center;
-  padding: 1rem 0;
-}
-.device {
-  --w: 218px;
-  --r: calc(var(--w) * .155);
-  --bezel: calc(var(--w) * .035);
-  position: relative; flex: none;
-  width: var(--w);
-  padding: var(--bezel);
-  border-radius: calc(var(--r) + var(--bezel));
-  background:
-    linear-gradient(148deg, #6f757a 0%, #2a2e31 14%, #14171a 42%, #23272a 72%, #71777c 100%);
-  box-shadow:
-    0 24px 48px rgba(0, 0, 0, .30),
-    0 4px 10px rgba(0, 0, 0, .22),
-    inset 0 0 0 1px rgba(255, 255, 255, .16);
-}
-.device .screen {
-  position: relative; overflow: hidden;
-  border-radius: var(--r);
-  background: #000;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .55);
-}
-.device img { display: block; width: 100%; height: auto; }
-/* The sheen across the glass. */
-.device .screen::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(112deg, rgba(255,255,255,.16) 0 22%, rgba(255,255,255,0) 46%);
-}
-/* Edge buttons. */
-.device::before, .device::after {
-  content: ""; position: absolute; border-radius: 2px;
-  background: linear-gradient(180deg, #4c5257, #23272a);
-}
-.device::before {
-  left: calc(var(--w) * -.012); top: 22%;
-  width: calc(var(--w) * .014); height: 13%;
-}
-.device::after {
-  right: calc(var(--w) * -.012); top: 26%;
-  width: calc(var(--w) * .014); height: 17%;
-}
-.device .btn-action {
-  position: absolute; left: calc(var(--w) * -.012); top: 15%;
-  width: calc(var(--w) * .014); height: 5.5%;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #4c5257, #23272a);
+/* Apple's own iPhone 17 Pro product bezels, from Apple Design Resources, with
+   the screenshots composited into the screen window at native resolution. The
+   frame is part of the image rather than CSS around it, so it is Apple's
+   rendering of the hardware and not my approximation of it. */
+.phones { display: flex; justify-content: center; align-items: center; padding: 1rem 0; }
+.device { flex: none; width: 210px; }
+.device img {
+  display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 20px 34px rgba(0, 0, 0, .32)) drop-shadow(0 3px 8px rgba(0, 0, 0, .2));
 }
 .device.back { transform: rotate(6deg) translateY(-8px); z-index: 1; }
-.device.front { margin-left: calc(var(--w) * -.26); transform: rotate(-4deg); z-index: 2; }
+.device.front { margin-left: -54px; transform: rotate(-4deg); z-index: 2; }
 @media (max-width: 46rem) {
   .hero { grid-template-columns: 1fr; gap: 1.4rem; }
-  .device { --w: 190px; }
+  .device { width: 178px; }
+  .device.front { margin-left: -44px; }
 }
 .card {
   background: var(--card);
@@ -210,16 +167,14 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
 
   <div class="phones">
     <div class="device back">
-      <span class="btn-action"></span>
       <div class="screen">
-        <img src="img/evidence.png" width="414" height="900"
+        <img src="img/device-evidence.png" width="620" height="1268"
              alt="The Loxley app showing Coca-Cola's reported revenue with the SEC filing it was read from, and the public sources behind the boycott.">
       </div>
     </div>
     <div class="device front">
-      <span class="btn-action"></span>
       <div class="screen">
-        <img src="img/list.png" width="414" height="900"
+        <img src="img/device-list.png" width="620" height="1268"
              alt="The Loxley app listing a running boycott of The Coca-Cola Company over single-use plastic packaging, with the amount withheld and the number of members.">
       </div>
     </div>
