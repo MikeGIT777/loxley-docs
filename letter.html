@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demand letters: Loxley</title>
+<meta name="description" content="The demand letter behind every running Loxley boycott, with the number of people who have signed it by joining. Public so it can be read and cited by anybody, including the company it is addressed to.">
+<meta property="og:title" content="Demand letters: Loxley">
+<meta property="og:description" content="What a group of people are asking a company to do, how many of them are asking, and what they have stopped buying until it happens.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://mikegit777.github.io/loxley-docs/letter.html">
+<style>
+:root {
+  --ink: #1f2624;
+  --blue: #8abac7;
+  --sand: #faebbd;
+  --pink: #e66699;
+  --coral: #b34f54;
+  --green: #4a7d7d;
+  --line: rgba(31, 38, 36, .14);
+  --card: rgba(250, 247, 235, .78);
+  --paper: rgba(253, 251, 244, .92);
+  --grid: rgba(255, 255, 255, .17);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #edeeeb;
+    --blue: #08080a;
+    --sand: #212123;
+    --line: rgba(255, 255, 255, .10);
+    --card: rgba(44, 46, 47, .82);
+    --paper: rgba(38, 40, 41, .9);
+    --grid: rgba(255, 255, 255, .05);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background-color: var(--blue);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 36px 36px;
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 0; }
+.wordmark {
+  font-size: .95rem; font-weight: 800; letter-spacing: .18em;
+  text-transform: uppercase; opacity: .75; margin: 0 0 1.4rem;
+}
+.wordmark a { text-decoration: none; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.6rem 1.5rem;
+  margin-bottom: 1.1rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .10);
+}
+h1 { font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.08; margin: 0 0 .6rem; letter-spacing: -.02em; }
+h2 { font-size: 1.3rem; line-height: 1.2; margin: 0 0 .7rem; letter-spacing: -.01em; }
+p { margin: 0 0 1rem; }
+p:last-child, ul:last-child, ol:last-child { margin-bottom: 0; }
+a { color: inherit; }
+.eyebrow {
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; opacity: .65; margin: 0 0 .7rem;
+}
+.note { font-size: .95rem; opacity: .7; }
+
+/* The letter itself, set as a letter: a sheet of paper rather than a card of
+   marketing copy. It is the only thing on the page anybody came to read. */
+.letter {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 2.2rem 2rem;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .10);
+}
+.letter .to { font-weight: 700; font-size: 1.15rem; margin: 0 0 1.1rem; }
+.asks { padding-left: 1.4rem; margin: 0 0 1.2rem; }
+.asks li { margin: .55rem 0; }
+.deadline { font-weight: 700; }
+.deadline.past { color: var(--coral); }
+@media (prefers-color-scheme: dark) { .deadline.past { color: #d98488; } }
+.signoff { border-top: 1px solid var(--line); padding-top: 1.1rem; margin-top: 1.4rem; }
+@media (max-width: 34rem) { .letter { padding: 1.5rem 1.2rem; } }
+
+/* The count. The one number on the page that moves. */
+.tally {
+  display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.2rem; margin-top: 1.2rem;
+}
+.tally div { min-width: 7rem; }
+.tally .n {
+  display: block; font-size: 2rem; font-weight: 800;
+  letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.tally .k { display: block; font-size: .85rem; opacity: .7; }
+.sent { color: var(--green); font-weight: 700; }
+@media (prefers-color-scheme: dark) { .sent { color: #8fc2c2; } }
+
+.index { list-style: none; padding: 0; margin: 0; }
+.index li { border-top: 1px solid var(--line); padding: .9rem 0; }
+.index li:first-child { border-top: 0; padding-top: 0; }
+.index a { font-weight: 700; text-decoration: none; font-size: 1.1rem; }
+.index a:hover { text-decoration: underline; }
+.index .meta { font-size: .93rem; opacity: .72; }
+
+footer { margin-top: 2.5rem; background: var(--sand); border-top: 1px solid var(--line); }
+.footer-inner { max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 3rem; font-size: .95rem; }
+footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1.1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="wordmark"><a href="index.html">Loxley</a></p>
+
+<div id="main">
+  <div class="card">
+    <p class="note" id="loading">Loading.</p>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <ul>
+      <li><a href="index.html">Loxley</a></li>
+      <li><a href="letter.html">All demand letters</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="terms-of-use.html">Terms of Use</a></li>
+      <li><a href="community-guidelines.html">Community Rules</a></li>
+      <li><a href="support.html">Support</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+// The anon key is a public client key, exactly as it is in the iOS app. Row
+// level security is what protects the data, not the key, and the two functions
+// called here are the only ones granted to `anon` that touch a boycott: they
+// return what a moderator cleared and nothing else.
+var API = "https://imiuhisljicirnffwvwb.supabase.co/rest/v1/rpc/";
+var KEY = "sb_publishable_dRB5aQrRO7ZDVoYvBiVaJg_X1x9WNOW";
+
+function rpc(name, args) {
+  return fetch(API + name, {
+    method: "POST",
+    headers: {
+      "apikey": KEY,
+      "Authorization": "Bearer " + KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(args || {})
+  }).then(function (r) {
+    if (!r.ok) { throw new Error("HTTP " + r.status); }
+    return r.json();
+  });
+}
+
+// Everything below builds nodes and sets textContent. Nothing member-written
+// is ever put through innerHTML: the demands have been read by a moderator,
+// which is a different guarantee from being safe to interpret as markup.
+function el(tag, className, text) {
+  var n = document.createElement(tag);
+  if (className) { n.className = className; }
+  if (text !== undefined && text !== null) { n.textContent = text; }
+  return n;
+}
+
+function card(className) {
+  var n = el("div", className || "card");
+  return n;
+}
+
+function longDate(iso) {
+  if (!iso) { return null; }
+  var d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso);
+  if (isNaN(d)) { return null; }
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function count(n) {
+  return Number(n || 0).toLocaleString("en-GB");
+}
+
+function show(nodes) {
+  var main = document.getElementById("main");
+  main.textContent = "";
+  nodes.forEach(function (n) { main.appendChild(n); });
+}
+
+function fail(message) {
+  var c = card();
+  c.appendChild(el("h1", null, "This letter could not be loaded"));
+  c.appendChild(el("p", null, message));
+  c.appendChild(el("p", "note", "If it was linked from somewhere, the link may be to a boycott that has since been archived."));
+  var back = el("p");
+  var a = el("a", null, "See the letters that are running");
+  a.href = "letter.html";
+  back.appendChild(a);
+  c.appendChild(back);
+  show([c]);
+}
+
+// ---------------------------------------------------------------------------
+// One letter
+// ---------------------------------------------------------------------------
+
+function renderLetter(d) {
+  var nodes = [];
+
+  var head = card();
+  head.appendChild(el("p", "eyebrow", "Demand letter"));
+  head.appendChild(el("h1", null, d.title));
+  head.appendChild(el("p", "note",
+    "Started " + (longDate(d.starts_on) || "recently") + ", running " + d.length_days + " days."));
+  nodes.push(head);
+
+  var letter = card("letter");
+  letter.appendChild(el("p", "to", "To " + d.target_company + ":"));
+  letter.appendChild(el("p", null,
+    "This is a " + d.length_days + "-day collective boycott of " + d.target_company + "."));
+
+  if (d.demands && d.demands.length) {
+    letter.appendChild(el("p", null, "We are asking you to:"));
+    var ol = el("ol", "asks");
+    d.demands.forEach(function (ask) { ol.appendChild(el("li", null, ask)); });
+    letter.appendChild(ol);
+  }
+
+  // A demand with no date is a wish, so the date leads its own line and the
+  // letter says plainly when it has run out. Same rule as the app and the
+  // letter body the database composes.
+  var by = longDate(d.demand_deadline);
+  if (by) {
+    var passed = new Date(d.demand_deadline + "T00:00:00") < new Date();
+    letter.appendChild(el("p", "deadline" + (passed ? " past" : ""),
+      passed
+        ? "We asked for this by " + by + ". That date has passed."
+        : "We are asking for this by " + by + "."));
+  }
+
+  var signoff = el("div", "signoff");
+  signoff.appendChild(el("p", null,
+    count(d.signed_count) + (Number(d.signed_count) === 1 ? " person has" : " people have")
+    + " signed this letter by joining the boycott. Until it is met, they are not buying from "
+    + d.target_company + "."));
+  letter.appendChild(signoff);
+  nodes.push(letter);
+
+  var tally = card();
+  tally.appendChild(el("h2", null, "Where it stands"));
+
+  var sentOn = longDate(d.delivered_at);
+  tally.appendChild(el("p", "note", sentOn
+    ? "This letter was sent to " + d.target_company + " on " + sentOn + "."
+    : "This letter has not been sent to " + d.target_company + " yet. It is public from the day the boycott started."));
+
+  var row = el("div", "tally");
+  [["Signed", count(d.signed_count)], ["Members", count(d.member_count)]]
+    .forEach(function (pair) {
+      var box = el("div");
+      box.appendChild(el("span", "n", pair[1]));
+      box.appendChild(el("span", "k", pair[0]));
+      row.appendChild(box);
+    });
+  var status = el("div");
+  status.appendChild(el("span", "n" + (sentOn ? " sent" : ""), sentOn ? "Sent" : "Not sent"));
+  status.appendChild(el("span", "k", "To the company"));
+  row.appendChild(status);
+  tally.appendChild(row);
+  nodes.push(tally);
+
+  var about = card();
+  about.appendChild(el("h2", null, "What this is"));
+  about.appendChild(el("p", null,
+    "Loxley organises collective consumer boycotts. Members propose a boycott against a company on a named issue, a moderator reads it, and it runs for at least ninety days. Joining is the whole commitment, and joining is what signs this letter."));
+  about.appendChild(el("p", null,
+    "Nothing here is a claim about what the company has done. It is a statement of what a group of people are asking for and what they have stopped buying until it happens. The only tactic Loxley supports is declining to buy something."));
+  var more = el("p");
+  var link = el("a", null, "More about Loxley");
+  link.href = "index.html";
+  more.appendChild(link);
+  about.appendChild(more);
+  nodes.push(about);
+
+  document.title = "Demand letter to " + d.target_company + ": Loxley";
+  show(nodes);
+}
+
+// ---------------------------------------------------------------------------
+// The index of running letters
+// ---------------------------------------------------------------------------
+
+function renderIndex(rows) {
+  var head = card();
+  head.appendChild(el("p", "eyebrow", "Demand letters"));
+  head.appendChild(el("h1", null, "What people are asking for"));
+  head.appendChild(el("p", null,
+    "Every boycott running on Loxley has a letter, and every member who joins signs it. They are published here so anybody can read one, including the company it is addressed to."));
+
+  if (!rows.length) {
+    head.appendChild(el("p", "note", "No boycotts are running at the moment."));
+    show([head]);
+    return;
+  }
+
+  var list = card();
+  var ul = el("ul", "index");
+  rows.forEach(function (r) {
+    var li = el("li");
+    var a = el("a", null, r.title);
+    a.href = "letter.html?b=" + encodeURIComponent(r.slug);
+    li.appendChild(a);
+    li.appendChild(el("div", "meta",
+      r.target_company + " · " + r.issue + " · "
+      + count(r.signed_count) + " signed · "
+      + (r.delivered_at ? "sent " + longDate(r.delivered_at) : "not sent yet")));
+    ul.appendChild(li);
+  });
+  list.appendChild(ul);
+  show([head, list]);
+}
+
+// ---------------------------------------------------------------------------
+
+var slug = new URLSearchParams(window.location.search).get("b");
+
+if (slug) {
+  rpc("public_letter", { p_slug: slug })
+    .then(function (rows) {
+      if (!rows || !rows.length) {
+        fail("There is no boycott at this address.");
+        return;
+      }
+      renderLetter(rows[0]);
+    })
+    .catch(function (e) { fail("The server did not answer (" + e.message + ")."); });
+} else {
+  rpc("public_letters", {})
+    .then(renderIndex)
+    .catch(function (e) { fail("The server did not answer (" + e.message + ")."); });
+}
+</script>
+</body>
+</html>
