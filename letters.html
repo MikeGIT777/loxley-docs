@@ -8,7 +8,7 @@
 <meta property="og:title" content="Letters: Loxley">
 <meta property="og:description" content="What a group of people are asking a company to do, how many of them are asking, and what they have stopped buying until it happens.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://mikegit777.github.io/loxley-docs/letter.html">
+<meta property="og:url" content="https://joinloxley.pages.dev/letters">
 <style>
 :root {
   --ink: #1f2624;
@@ -135,7 +135,7 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   <div class="footer-inner">
     <ul>
       <li><a href="index.html">Loxley</a></li>
-      <li><a href="letter.html">Letters</a></li>
+      <li><a href="letters">Letters</a></li>
       <li><a href="privacy-policy.html">Privacy Policy</a></li>
       <li><a href="terms-of-use.html">Terms of Use</a></li>
       <li><a href="community-guidelines.html">Community Rules</a></li>
@@ -206,7 +206,7 @@ function fail(message) {
   c.appendChild(el("p", "note", "If it was linked from somewhere, the link may be to a boycott that has since been archived."));
   var back = el("p");
   var a = el("a", null, "See the letters that are running");
-  a.href = "letter.html";
+  a.href = "letters";
   back.appendChild(a);
   c.appendChild(back);
   show([c]);
@@ -302,12 +302,21 @@ function renderLetter(d) {
 // The index of running letters
 // ---------------------------------------------------------------------------
 
-function renderIndex(rows) {
+function renderIndex(all) {
+  const rows = all.slice()
+    .sort((a, b) => Number(b.signed_count || 0) - Number(a.signed_count || 0))
+    .slice(0, 10);
+
   var head = card();
   head.appendChild(el("p", "eyebrow", "Letters"));
   head.appendChild(el("h1", null, "What people are asking for"));
   head.appendChild(el("p", null,
     "Every boycott running on Loxley has a letter, and every member who joins signs it. They are published here so anybody can read one, including the company it is addressed to."));
+
+  if (all.length > rows.length) {
+    head.appendChild(el("p", "note",
+      `The ten most signed of ${all.length} running.`));
+  }
 
   if (!rows.length) {
     head.appendChild(el("p", "note", "No boycotts are running at the moment."));
@@ -320,7 +329,7 @@ function renderIndex(rows) {
   rows.forEach(function (r) {
     var li = el("li");
     var a = el("a", null, r.title);
-    a.href = "letter.html?b=" + encodeURIComponent(r.slug);
+    a.href = "letters?b=" + encodeURIComponent(r.slug);
     li.appendChild(a);
     li.appendChild(el("div", "meta",
       r.target_company + " · " + r.issue + " · "
