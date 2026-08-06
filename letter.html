@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demand letters: Loxley</title>
+<title>Letters: Loxley</title>
 <meta name="description" content="The demand letter behind every running Loxley boycott, with the number of people who have signed it by joining. Public so it can be read and cited by anybody, including the company it is addressed to.">
-<meta property="og:title" content="Demand letters: Loxley">
+<meta property="og:title" content="Letters: Loxley">
 <meta property="og:description" content="What a group of people are asking a company to do, how many of them are asking, and what they have stopped buying until it happens.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://mikegit777.github.io/loxley-docs/letter.html">
@@ -135,7 +135,7 @@ footer ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1
   <div class="footer-inner">
     <ul>
       <li><a href="index.html">Loxley</a></li>
-      <li><a href="letter.html">All demand letters</a></li>
+      <li><a href="letter.html">Letters</a></li>
       <li><a href="privacy-policy.html">Privacy Policy</a></li>
       <li><a href="terms-of-use.html">Terms of Use</a></li>
       <li><a href="community-guidelines.html">Community Rules</a></li>
@@ -220,7 +220,7 @@ function renderLetter(d) {
   var nodes = [];
 
   var head = card();
-  head.appendChild(el("p", "eyebrow", "Demand letter"));
+  head.appendChild(el("p", "eyebrow", "Letter"));
   head.appendChild(el("h1", null, d.title));
   head.appendChild(el("p", "note",
     "Started " + (longDate(d.starts_on) || "recently") + ", running " + d.length_days + " days."));
@@ -294,7 +294,7 @@ function renderLetter(d) {
   about.appendChild(more);
   nodes.push(about);
 
-  document.title = "Demand letter to " + d.target_company + ": Loxley";
+  document.title = "Letter to " + d.target_company + ": Loxley";
   show(nodes);
 }
 
@@ -304,7 +304,7 @@ function renderLetter(d) {
 
 function renderIndex(rows) {
   var head = card();
-  head.appendChild(el("p", "eyebrow", "Demand letters"));
+  head.appendChild(el("p", "eyebrow", "Letters"));
   head.appendChild(el("h1", null, "What people are asking for"));
   head.appendChild(el("p", null,
     "Every boycott running on Loxley has a letter, and every member who joins signs it. They are published here so anybody can read one, including the company it is addressed to."));
