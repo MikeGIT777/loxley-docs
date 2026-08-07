@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Loxley Moderation</title>
+<!--
+  Moderation console.
+
+  This page is public, so it holds no secret and can enforce nothing. Every
+  button below calls a SECURITY DEFINER function that checks is_moderator()
+  for itself; the page is a convenience over calls that would refuse anybody
+  else. Reading the source of this file tells an attacker nothing they could
+  not already learn from the app bundle, which ships the same publishable key.
+
+  Configure by editing the two constants in CONFIG below.
+-->
+<style>
+  :root {
+    --ink: #123040;
+    --paper: #f6f3ea;
+    --card: #ffffff;
+    --line: #d9d2c2;
+    --pink: #e8628c;
+    --green: #2f7d64;
+    --red: #b4453f;
+    --muted: #5d6f78;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    font: 16px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--paper); color: var(--ink);
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 32px 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px; margin-bottom: 12px;
+  }
+  .row { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; }
+  .title { font-weight: 700; }
+  .meta { color: var(--muted); font-size: 14px; }
+  .warn { color: var(--red); font-weight: 700; }
+  label { display: block; font-size: 14px; margin: 12px 0 4px; }
+  input, textarea, select {
+    width: 100%; padding: 10px; font: inherit; font-size: 15px;
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; color: inherit;
+  }
+  textarea { min-height: 68px; resize: vertical; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  button {
+    font: inherit; font-weight: 700; font-size: 15px;
+    padding: 10px 16px; border: 0; border-radius: 6px;
+    background: var(--ink); color: #fff; cursor: pointer;
+  }
+  button.approve { background: var(--green); }
+  button.reject { background: var(--red); }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .empty { color: var(--muted); font-style: italic; }
+  #status { margin: 12px 0; min-height: 24px; font-weight: 700; }
+  #status.bad { color: var(--red); }
+  #status.good { color: var(--green); }
+  .hidden { display: none; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  .research {
+    border-left: 3px solid var(--pink);
+    padding: 4px 0 4px 14px; margin: 12px 0 18px;
+  }
+  .sources { margin: 10px 0; padding-left: 22px; }
+  .sources li { margin-bottom: 10px; }
+  .sources a { color: var(--ink); font-weight: 700; }
+  .sources .meta { display: block; margin-top: 2px; }
+
+  /* The letter exactly as it was frozen at queue time. Shown, not recomposed:
+     what a moderator sends has to be what the record says was sent. */
+  .letter-body {
+    white-space: pre-wrap; background: #fff; border: 1px solid var(--line);
+    border-radius: 6px; padding: 12px; margin: 12px 0 0; font-size: 14px;
+  }
+  .pill {
+    display: inline-block; font-size: 13px; font-weight: 700;
+    border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px;
+  }
+  .pill.wait { color: var(--red); border-color: var(--red); }
+  .pill.done { color: var(--green); border-color: var(--green); }
+
+  /* The pooled demands, which are what promotion actually reads. A cleared
+     line is the letter; everything else is a suggestion nobody sends. */
+  .pool { list-style: none; padding: 0; margin: 12px 0; }
+  .pool li {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding: 10px 0;
+  }
+  .pool li:first-child { border-top: 0; }
+  .pool li > span:first-child { flex: 1 1 20rem; }
+  .pool li.cleared > span:first-child { font-weight: 700; }
+  .pool button { padding: 6px 12px; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Loxley Moderation</h1>
+  <p class="sub">Every submission is invisible to everyone but its author until it is approved here.</p>
+
+  <div id="status"></div>
+
+  <section id="signin" class="card">
+    <h2 style="margin-top:0">Sign in</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <div class="actions">
+      <button id="signin-button">Sign in</button>
+    </div>
+  </section>
+
+  <section id="console" class="hidden">
+    <div class="actions">
+      <button id="refresh" class="ghost">Refresh</button>
+      <button id="signout" class="ghost">Sign out</button>
+    </div>
+
+    <h2>Waiting for review (<span id="pending-count">0</span>)</h2>
+    <div id="pending"></div>
+
+    <h2>Open reports (<span id="reports-count">0</span>)</h2>
+    <div id="reports"></div>
+
+    <h2>Approved, waiting for you to start them (<span id="board-count">0</span>)</h2>
+    <p class="meta">Approving only makes the writing visible. Nothing runs, and
+      nobody can join, until you start it.</p>
+    <div id="board"></div>
+
+    <h2>Demand letters to send (<span id="outbox-count">0</span>)</h2>
+    <div id="outbox"></div>
+
+    <h2>Running now</h2>
+    <div id="boycotts"></div>
+  </section>
+</main>
+
+<script type="module">
+// ---------------------------------------------------------------------------
+// CONFIG. Both values are public: the app ships the same ones.
+// ---------------------------------------------------------------------------
+const CONFIG = {
+  url: "https://imiuhisljicirnffwvwb.supabase.co",
+  publishableKey: "sb_publishable_dRB5aQrRO7ZDVoYvBiVaJg_X1x9WNOW",
+};
+
+const statusEl = document.getElementById("status");
+let session = null;
+
+function say(message, kind = "") {
+  statusEl.textContent = kind === "bad" ? plain(message) : message;
+  statusEl.className = kind;
+}
+
+function escape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[c]);
+}
+
+// For a value going into a URL rather than into markup. escape() is the wrong
+// tool there: it would turn an ampersand into &amp; inside a query string.
+function query(value) {
+  return encodeURIComponent(String(value ?? "").trim());
+}
+
+/// Every call goes out with the moderator's own token. The service key is not
+/// here and must never be.
+async function api(path, options = {}) {
+  const response = await fetch(`${CONFIG.url}${path}`, {
+    ...options,
+    headers: {
+      "apikey": CONFIG.publishableKey,
+      "Content-Type": "application/json",
+      ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const text = await response.text();
+  const body = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    throw new Error(body?.message || body?.error_description || body?.error || "Request failed");
+  }
+  return body;
+}
+
+const rpc = (name, args = {}) =>
+  api(`/rest/v1/rpc/${name}`, { method: "POST", body: JSON.stringify(args) });
+
+// ---------------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------------
+
+async function signIn(email, password) {
+  const body = await api("/auth/v1/token?grant_type=password", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+
+  session = body;
+  sessionStorage.setItem("loxley.session", JSON.stringify(body));
+
+  // Being signed in is not the same as being a moderator, and the difference
+  // should be obvious immediately rather than at the first failed button.
+  const moderator = await rpc("is_moderator");
+  if (moderator !== true) {
+    signOut();
+    throw new Error("That account is signed in but is not a moderator.");
+  }
+
+  document.getElementById("signin").classList.add("hidden");
+  document.getElementById("console").classList.remove("hidden");
+  await loadAll();
+}
+
+function signOut() {
+  session = null;
+  sessionStorage.removeItem("loxley.session");
+  document.getElementById("console").classList.add("hidden");
+  document.getElementById("signin").classList.remove("hidden");
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+function renderPending(rows) {
+  document.getElementById("pending-count").textContent = rows.length;
+  const host = document.getElementById("pending");
+
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">Nothing waiting. Nobody is stuck.</p>';
+    return;
+  }
+
+  host.innerHTML = rows.map((row) => `
+    <div class="card" data-id="${escape(row.id)}" data-author="${escape(row.author_id)}">
+      <div class="row">
+        <span class="title">${escape(row.title)}</span>
+        <span class="meta">${new Date(row.created_at).toLocaleString()}</span>
+      </div>
+      <p class="meta">${escape(row.target_company)} &middot; ${escape(row.issue)}</p>
+      <p><strong>Demand:</strong> ${escape(row.demand)}</p>
+      <p><strong>Why:</strong> ${escape(row.emotional_hook)}</p>
+
+      ${(row.demands || []).length ? `
+        <p><strong>The letter asks:</strong></p>
+        <ol>${row.demands.map((d) => `<li>${escape(d)}</li>`).join("")}</ol>
+        <p class="meta">
+          By ${row.demand_deadline ? escape(row.demand_deadline) : "no date given"}
+          &middot; held for ${row.length_days || 90} days
+        </p>` : '<p class="meta warn">No demand letter. Nothing specific is being asked for.</p>'}
+
+      ${(row.evidence || []).length ? `
+        <p><strong>Backed by:</strong></p>
+        <ul>${row.evidence.map((e) => `
+          <li>${escape(e.claim)}
+            &mdash; <a href="${escape(e.source_url)}" target="_blank" rel="noreferrer noopener">${escape(e.source_name)}</a>
+          </li>`).join("")}</ul>` : '<p class="meta warn">No sources attached.</p>'}
+
+      <p class="meta">
+        Withholding: ${escape(row.withheld_unit || "not stated")}
+        ${row.unit_price != null ? `at $${escape(String(row.unit_price))}` : ""}
+        ${row.purchase_interval_days ? `every ${row.purchase_interval_days} days` : ""}
+      </p>
+
+      <p class="meta">
+        Author ${escape(String(row.author_id).slice(0, 8))}
+        &middot; ${row.author_pending} pending
+        &middot; ${row.author_rejected} rejected
+        ${row.author_banned ? '<span class="warn">&middot; BANNED</span>' : ""}
+      </p>
+
+      <label>Reason, if rejecting. The author sees this, so make it something
+        they can act on.</label>
+      <textarea class="reason" placeholder="Targets an individual rather than a company."></textarea>
+
+      <div class="actions">
+        <button class="approve" data-act="approve">Approve</button>
+        <button class="reject" data-act="reject">Reject</button>
+        <button class="ghost" data-act="ban">Ban author</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderReports(rows) {
+  document.getElementById("reports-count").textContent = rows.length;
+  const host = document.getElementById("reports");
+
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">No open reports.</p>';
+    return;
+  }
+
+  host.innerHTML = rows.map((row) => `
+    <div class="card" data-report="${escape(row.report_id)}">
+      <div class="row">
+        <span class="title">${escape(row.title || row.target_type)}</span>
+        <span class="meta">${new Date(row.created_at).toLocaleString()}</span>
+      </div>
+      <p><strong>Reported for:</strong> ${escape(row.reason)}</p>
+      ${row.detail ? `<p class="meta">${escape(row.detail)}</p>` : ""}
+      <label>Resolution</label>
+      <textarea class="resolution" placeholder="Removed. / No action needed."></textarea>
+      <div class="actions">
+        <button data-act="resolve">Resolve</button>
+        ${row.author_id ? '<button class="ghost" data-act="ban-reported">Ban author</button>' : ""}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderBoard(rows) {
+  const host = document.getElementById("board");
+  document.getElementById("board-count").textContent = rows.length;
+
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">Nothing approved and waiting.</p>';
+    return;
+  }
+
+  host.innerHTML = rows.map((row) => `
+    <div class="card" data-board="${escape(row.id)}">
+      <div class="row">
+        <span class="title">${escape(row.title)}</span>
+        <span class="pill ${row.ready ? "done" : "wait"}">${row.ready ? "ready to start" : "not ready"}</span>
+      </div>
+      <p class="meta">${escape(row.target_company)} &middot; ${escape(row.issue)}</p>
+
+      ${(row.demand_pool || []).length ? `
+        <p class="meta">The letter is composed from the cleared lines only, in
+          this order. Everything else is left out, however many people asked
+          for it.</p>
+        <ul class="pool">
+          ${row.demand_pool.map((d) => `
+            <li data-demand="${escape(d.id)}" class="${d.approved ? "cleared" : ""}">
+              <span>${escape(d.body)}</span>
+              <span class="meta">${d.support} asked for this</span>
+              <button class="${d.approved ? "ghost" : "approve"}"
+                      data-act="${d.approved ? "unclear-demand" : "clear-demand"}">
+                ${d.approved ? "Remove from the letter" : "Put in the letter"}
+              </button>
+            </li>`).join("")}
+        </ul>
+        <p class="meta">
+          By ${row.demand_deadline ? escape(row.demand_deadline) : "no date given"}
+          &middot; the submitter asked to hold for ${row.length_days || 90} days
+        </p>`
+        : (row.demands || []).length ? `
+        <ol>${row.demands.map((d) => `<li>${escape(d)}</li>`).join("")}</ol>
+        <p class="meta">
+          By ${row.demand_deadline ? escape(row.demand_deadline) : "no date given"}
+          &middot; the submitter asked to hold for ${row.length_days || 90} days
+        </p>` : ""}
+
+      <p class="meta">
+        Withholding ${escape(row.withheld_unit || "nothing stated")}
+        ${row.unit_price != null ? `at $${escape(String(row.unit_price))}` : ""}
+        ${row.purchase_interval_days ? `every ${row.purchase_interval_days} days` : ""}
+        ${row.economics_ready ? "" : '<span class="warn">&middot; needs a unit, a price and an interval before it can start</span>'}
+        ${row.letter_ready ? "" : '<span class="warn">&middot; no demand is in the letter yet, so there is nothing to send</span>'}
+        ${row.slots_free > 0 ? "" : `<span class="warn">&middot; all slots are running, archive one first</span>`}
+      </p>
+
+      <details>
+        <summary>Research the denominator</summary>
+        <p class="meta">This is the half the submitter cannot supply. Save it
+          separately from promoting, so you can come back to it. A figure with
+          no source is refused, and a missing figure produces a missing number
+          in the app rather than a guess.</p>
+
+        <div class="research">
+          <p class="meta"><strong>Where to look.</strong> These open the actual
+            filings and databases for this company, in the order worth trying.
+            Nothing is fetched or filled in for you on purpose: a revenue figure
+            nobody opened a source for is worse than no figure, because it
+            becomes the denominator of every percentage a member ever sees.</p>
+
+          <ol class="sources">
+            <li>
+              <a target="_blank" rel="noreferrer noopener"
+                 href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;company=${query(row.target_company)}&amp;type=10-K&amp;dateb=&amp;owner=include&amp;count=40">
+                SEC EDGAR, 10-K filings for ${escape(row.target_company)}</a>
+              <span class="meta">The company figure, reported. Net revenues are
+                on the income statement. Use this and mark it reported.</span>
+            </li>
+            <li>
+              <a target="_blank" rel="noreferrer noopener"
+                 href="https://www.sec.gov/edgar/search/#/q=%22${query(row.brand_line_name || row.withheld_unit || row.target_company)}%22&amp;forms=10-K&amp;entityName=${query(row.target_company)}">
+                EDGAR full-text search for &ldquo;${escape(row.brand_line_name || row.withheld_unit || row.target_company)}&rdquo;</a>
+              <span class="meta">Whether the brand line is broken out anywhere
+                in the filings. Usually it is not, which is itself the answer.</span>
+            </li>
+            <li>
+              <a target="_blank" rel="noreferrer noopener"
+                 href="https://www.statista.com/search/?q=${query((row.brand_line_name || "") + " retail sales")}">
+                Statista, brand-level retail sales</a>
+              <span class="meta">Where a brand-line figure usually lives when
+                the filings do not carry one. Mark it estimated, and put the
+                year in the source line: these go stale.</span>
+            </li>
+            <li>
+              <a target="_blank" rel="noreferrer noopener"
+                 href="https://duckduckgo.com/?q=${query(row.target_company + " investor relations annual report")}">
+                ${escape(row.target_company)} investor relations</a>
+              <span class="meta">For a private company with no filings, this is
+                usually the only reported number there is.</span>
+            </li>
+          </ol>
+
+          <p class="meta">If the brand line genuinely has no public figure,
+            leave the revenue blank and say so in the source line. The app
+            handles that: no denominator, no threshold, no percentage, and it
+            tells the member it does not know.</p>
+        </div>
+
+        <label>Product line the percentage is measured against</label>
+        <input class="e-line" placeholder="Dasani" value="${escape(row.brand_line_name || "")}">
+
+        <label>That line's annual revenue, and where the figure came from</label>
+        <input class="e-revenue" type="number" step="1" placeholder="3790000000"
+               value="${row.brand_line_revenue != null ? escape(String(row.brand_line_revenue)) : ""}">
+        <select class="e-basis">
+          <option value="estimated"${row.brand_line_revenue_basis === "reported" ? "" : " selected"}>Estimated</option>
+          <option value="reported"${row.brand_line_revenue_basis === "reported" ? " selected" : ""}>Reported by the company</option>
+        </select>
+        <input class="e-source" placeholder="Statista, US packaged water brands by retail sales, 2018"
+               value="${escape(row.brand_line_revenue_source || "")}">
+
+        <label>The parent company's annual revenue, so the smaller, less
+          flattering percentage is always available beside the brand one</label>
+        <input class="e-crevenue" type="number" step="1" placeholder="47941000000"
+               value="${row.company_revenue != null ? escape(String(row.company_revenue)) : ""}">
+        <select class="e-cbasis">
+          <option value="reported"${row.company_revenue_basis === "estimated" ? "" : " selected"}>Reported by the company</option>
+          <option value="estimated"${row.company_revenue_basis === "estimated" ? " selected" : ""}>Estimated</option>
+        </select>
+        <input class="e-csource" placeholder="Form 10-K, FY2025"
+               value="${escape(row.company_revenue_source || "")}">
+
+        <label>Share of the line the threshold aims at, as a decimal</label>
+        <input class="e-target" type="number" step="0.001" min="0.001" max="1"
+               value="${escape(String(row.pressure_target_pct ?? 0.01))}">
+
+        <div class="actions">
+          <button data-act="economics">Save the research</button>
+        </div>
+      </details>
+
+      <details${row.ready ? " open" : ""}>
+        <summary>Start this boycott</summary>
+        <p class="meta">There is no pledge drive. Promoting starts it today and
+          it accrues from the first join. ${row.slots_free} free
+          ${row.slots_free === 1 ? "slot" : "slots"} left, and with nothing
+          queuing behind this, choosing which campaign takes one is the
+          decision.</p>
+        <label>Length in days. Blank uses the submitter's own answer.</label>
+        <input class="p-length" type="number" placeholder="${row.length_days || 90}" min="90" max="365">
+        <div class="actions">
+          <button data-act="promote"${row.ready && row.slots_free > 0 ? "" : " disabled"}
+                title="${row.ready ? "" : (row.economics_ready ? "Put a demand in the letter first" : "Fill in the unit, price and interval first")}">Start it</button>
+        </div>
+      </details>
+    </div>
+  `).join("");
+}
+
+// The outbox. Nothing here sends anything: it hands the moderator the exact
+// text and records what they say they did with it. When a sending domain
+// exists, an Edge Function does the same two calls and this panel becomes a
+// read-only log.
+function renderOutbox(rows) {
+  const host = document.getElementById("outbox");
+  const open = rows.filter((r) => r.status === "queued" || r.status === "no_contact");
+  document.getElementById("outbox-count").textContent = open.length;
+
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">Nothing queued. A letter is queued when a boycott starts and each time it passes a milestone.</p>';
+    return;
+  }
+
+  host.innerHTML = rows.map((row) => {
+    const occasion = row.occasion === "promotion"
+      ? "when it started"
+      : `at ${row.milestone} members`;
+
+    const pill = {
+      queued: '<span class="pill wait">to send</span>',
+      no_contact: '<span class="pill wait">no address</span>',
+      sent: '<span class="pill done">sent</span>',
+      failed: '<span class="pill">failed</span>',
+    }[row.status] || escape(row.status);
+
+    // A missing address is a piece of work, not an error: the form is the
+    // work. Sourced, because an address taken on trust decides who receives
+    // an accusation and nobody can check it afterwards.
+    const address = row.status === "no_contact" ? `
+      <label>Which desk</label>
+      <select class="contact-kind">
+        <option value="investor_relations">Investor relations</option>
+        <option value="press">Press</option>
+        <option value="general">General</option>
+      </select>
+      <label>An email address, if they publish one</label>
+      <input class="contact-email" type="email" placeholder="investors@example.com">
+      <label>Or a contact form, if they only publish that</label>
+      <input class="contact-form" type="url" placeholder="https://example.com/contact">
+      <label>Where you found it</label>
+      <input class="contact-source" placeholder="Investor relations contact page">
+      <label>Link to where you found it</label>
+      <input class="contact-url" placeholder="https://example.com/investors">
+      <div class="actions">
+        <button data-act="add-contact">Save it and queue the letter</button>
+      </div>
+    ` : "";
+
+    const actions = row.status === "queued" ? `
+      <label>What happened</label>
+      <input class="delivery-note" placeholder="Sent from the console, or why it failed">
+      <div class="actions">
+        <button class="approve" data-act="sent">Mark sent</button>
+        <button class="reject" data-act="failed">Mark failed</button>
+        <button class="ghost" data-act="failed-bounced">Failed, address is dead</button>
+      </div>
+    ` : "";
+
+    const retry = row.status === "failed" ? `
+      <div class="actions">
+        <button class="ghost" data-act="retry">Queue it again</button>
+      </div>
+    ` : "";
+
+    return `
+    <div class="card" data-delivery="${escape(row.id)}" data-company="${escape(row.company_id || "")}">
+      <div class="row">
+        <span class="title">${escape(row.target_company)}</span>
+        ${pill}
+      </div>
+      <p class="meta">
+        ${escape(row.boycott_title)} &middot; ${escape(occasion)} &middot;
+        ${row.signed_count} signed &middot;
+        ${row.recipient
+          ? (row.channel === "form"
+              ? `paste it into ${escape(row.recipient)}`
+              : `to ${escape(row.recipient)}`)
+          : "nobody to send it to"}
+        ${row.sent_at ? `&middot; sent ${escape(String(row.sent_at).slice(0, 10))}` : ""}
+        ${row.note ? `&middot; ${escape(row.note)}` : ""}
+      </p>
+      <details>
+        <summary class="meta">The letter as it will go</summary>
+        <pre class="letter-body">${escape(row.body)}</pre>
+      </details>
+      ${address}${actions}${retry}
+    </div>
+  `;
+  }).join("");
+}
+
+function renderBoycotts(rows) {
+  const host = document.getElementById("boycotts");
+
+  if (!rows.length) {
+    host.innerHTML = '<p class="empty">Nothing running.</p>';
+    return;
+  }
+
+  host.innerHTML = rows.map((row) => `
+    <div class="card" data-boycott="${escape(row.id)}">
+      <div class="row">
+        <span class="title">${escape(row.title)}</span>
+        <span class="meta">${escape(row.phase)}</span>
+      </div>
+      <p class="meta">
+        ${escape(row.target_company)} &middot;
+        ${row.member_count} members withholding an estimated
+        $${escape(String(row.annual_diverted ?? 0))} a year
+        ${row.pressure_threshold ? `&middot; ${row.pressure_threshold} would move the line` : "&middot; no revenue figure, so no threshold"}
+        &middot; started ${escape(row.starts_on)}, running ${row.length_days} days
+        ${row.demand_deadline ? `&middot; demands due ${escape(row.demand_deadline)}` : ""}
+      </p>
+      <div class="actions">
+        <button class="ghost" data-act="archive" data-outcome="won">Archive as won</button>
+        <button class="ghost" data-act="archive" data-outcome="no_response">Archive, no response</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ---------------------------------------------------------------------------
+// Loading and actions
+// ---------------------------------------------------------------------------
+
+async function loadAll() {
+  say("Loading");
+  try {
+    const [pending, reports, board, boycotts, outbox] = await Promise.all([
+      rpc("moderation_pending"),
+      rpc("moderation_reports"),
+      rpc("moderation_board"),
+      rpc("moderation_boycotts"),
+      rpc("letter_outbox"),
+    ]);
+
+    renderPending(pending || []);
+    renderReports(reports || []);
+    renderBoard(board || []);
+    renderBoycotts(boycotts || []);
+    renderOutbox(outbox || []);
+    say("");
+  } catch (error) {
+    say(error.message, "bad");
+  }
+}
+
+async function run(work, done) {
+  try {
+    await work();
+    say(done, "good");
+    await loadAll();
+  } catch (error) {
+    say(error.message, "bad");
+  }
+}
+
+document.getElementById("pending").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  const card = button.closest("[data-id]");
+  const id = card.dataset.id;
+  const reason = card.querySelector(".reason").value.trim();
+  const act = button.dataset.act;
+
+  if (act === "approve") {
+    run(() => rpc("approve_proposal", { p_proposal_id: id }), "Approved and on the board.");
+  } else if (act === "reject") {
+    if (reason.length < 10) return say("Write a reason the author can act on.", "bad");
+    run(() => rpc("reject_proposal", { p_proposal_id: id, p_reason: reason }), "Rejected.");
+  } else if (act === "ban") {
+    if (reason.length < 10) return say("Write a reason for the ban.", "bad");
+    if (!confirm("Ban this author? Everything they have submitted leaves every feed.")) return;
+
+    run(() => rpc("ban_user", { p_user_id: card.dataset.author, p_reason: reason }),
+        "Author banned.");
+  }
+});
+
+document.getElementById("reports").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  const card = button.closest("[data-report]");
+  const id = card.dataset.report;
+  const resolution = card.querySelector(".resolution").value.trim();
+
+  if (button.dataset.act === "resolve") {
+    run(() => rpc("resolve_report", { p_report_id: id, p_resolution: resolution }), "Resolved.");
+  }
+});
+
+// Codes the SECURITY DEFINER functions raise. Shown as-is they read as a
+// crash; every one of them is a piece of work with a next step.
+const REFUSALS = {
+  letter_not_approved: "Nothing is in the letter yet. Put at least one demand in it above, then start it.",
+  economics_incomplete: "It needs a withheld unit, a price and a purchase interval before any figure can be computed.",
+  no_free_slot: "Every slot is running. Archive a boycott below to free one.",
+  boycott_too_short: "The minimum is 90 days, because pressure has to outlast a retail buying review.",
+  proposal_not_found: "That submission is gone.",
+  company_not_found: "That company is not in the registry.",
+  not_a_moderator: "That account is signed in but is not a moderator.",
+  delivery_not_queued: "That letter is not waiting to be sent.",
+  delivery_already_sent: "That letter has already gone, and the record of when is not something to overwrite.",
+  no_contact_on_file: "There is still no address or form for this company.",
+  contact_needs_one_channel: "Give an email address or a contact form, not both and not neither.",
+  failure_needs_reason: "Say what went wrong. The reason is what stops the same address being tried again.",
+  block_needs_reason: "Say why.",
+};
+
+function plain(message) {
+  return REFUSALS[String(message ?? "").trim()] || message;
+}
+
+document.getElementById("board").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  const card = button.closest("[data-board]");
+  const value = (selector) => card.querySelector(selector).value.trim();
+
+  if (button.dataset.act === "economics") {
+    const revenue = value(".e-revenue");
+    const source = value(".e-source");
+    const companyRevenue = value(".e-crevenue");
+    const companySource = value(".e-csource");
+
+    // The server refuses these too. Checking here as well only saves a round
+    // trip; it is not the boundary.
+    if (revenue && !source) {
+      return say("A revenue figure needs a source. That is the whole point.", "bad");
+    }
+    if (companyRevenue && !companySource) {
+      return say("The company figure needs a source too.", "bad");
+    }
+
+    return run(() => rpc("set_proposal_economics", {
+      p_proposal_id: card.dataset.board,
+      p_brand_line_name: value(".e-line") || null,
+      p_brand_line_revenue: revenue ? Number(revenue) : null,
+      p_brand_line_revenue_basis: value(".e-basis"),
+      p_brand_line_revenue_source: source || null,
+      p_company_revenue: companyRevenue ? Number(companyRevenue) : null,
+      p_company_revenue_basis: value(".e-cbasis"),
+      p_company_revenue_source: companySource || null,
+      p_pressure_target_pct: Number(value(".e-target")) || 0.01,
+    }), "Research saved.");
+  }
+
+  if (button.dataset.act === "clear-demand" || button.dataset.act === "unclear-demand") {
+    const line = button.closest("[data-demand]");
+    return run(() => rpc("set_demand_approved", {
+      p_demand_id: line.dataset.demand,
+      p_approved: button.dataset.act === "clear-demand",
+    }), button.dataset.act === "clear-demand"
+      ? "In the letter."
+      : "Taken out of the letter.");
+  }
+
+  if (button.dataset.act !== "promote") return;
+
+  const length = value(".p-length");
+  run(() => rpc("promote_to_boycott", {
+    p_proposal_id: card.dataset.board,
+    p_length_days: length ? Number(length) : null,
+  }), "Running. It accrues from the first join.");
+});
+
+document.getElementById("boycotts").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button || button.dataset.act !== "archive") return;
+
+  if (!confirm("Archive this boycott? It stops accruing and leaves the feed.")) return;
+
+  run(() => rpc("archive_boycott", {
+    p_boycott_id: button.closest("[data-boycott]").dataset.boycott,
+    p_outcome: button.dataset.outcome,
+  }), "Archived.");
+});
+
+document.getElementById("outbox").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  const card = button.closest("[data-delivery]");
+  const id = card.dataset.delivery;
+  const act = button.dataset.act;
+  const note = card.querySelector(".delivery-note")?.value.trim() || "";
+
+  if (act === "add-contact") {
+    const email = card.querySelector(".contact-email").value.trim();
+    const form = card.querySelector(".contact-form").value.trim();
+    const source = card.querySelector(".contact-source").value.trim();
+    const url = card.querySelector(".contact-url").value.trim();
+
+    if (!email === !form) {
+      return say("Give an email address or a contact form, not both and not neither.", "bad");
+    }
+    if (!source || !url) {
+      return say("A contact needs where you found it and a link to it. It decides who receives an accusation.", "bad");
+    }
+    if (!card.dataset.company) {
+      return say("This boycott is not bound to a company in the registry, so there is nowhere to hang an address.", "bad");
+    }
+
+    return run(async () => {
+      await rpc("set_company_contact", {
+        p_company_id: card.dataset.company,
+        p_kind: card.querySelector(".contact-kind").value,
+        p_email: email || null,
+        p_form_url: form || null,
+        p_source: source,
+        p_source_url: url,
+      });
+      await rpc("retry_letter_delivery", { p_delivery_id: id });
+    }, "Saved, and the letter is queued.");
+  }
+
+  if (act === "sent") {
+    if (!confirm("Mark this as sent? Do it only after the letter has actually gone.")) return;
+    return run(() => rpc("mark_letter_sent", { p_delivery_id: id, p_note: note || null }),
+      "Recorded as sent.");
+  }
+
+  if (act === "failed" || act === "failed-bounced") {
+    const reason = note || prompt("What went wrong?");
+    if (!reason) return say("A failure needs a reason.", "bad");
+
+    return run(() => rpc("mark_letter_failed", {
+      p_delivery_id: id,
+      p_reason: reason,
+      p_contact_unusable: act === "failed-bounced",
+    }), act === "failed-bounced"
+      ? "Recorded, and that address will not be used again."
+      : "Recorded as failed.");
+  }
+
+  if (act === "retry") {
+    return run(() => rpc("retry_letter_delivery", { p_delivery_id: id }), "Queued again.");
+  }
+});
+
+document.getElementById("signin-button").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  say("Signing in");
+  try {
+    await signIn(email, password);
+    say("");
+  } catch (error) {
+    say(error.message, "bad");
+  }
+});
+
+document.getElementById("password").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") document.getElementById("signin-button").click();
+});
+
+document.getElementById("refresh").addEventListener("click", loadAll);
+document.getElementById("signout").addEventListener("click", signOut);
+
+// Restore a session for the tab only. Deliberately not localStorage: a
+// moderation console left signed in forever on a shared machine is a problem.
+const stored = sessionStorage.getItem("loxley.session");
+if (stored) {
+  session = JSON.parse(stored);
+  rpc("is_moderator")
+    .then((ok) => {
+      if (ok !== true) return signOut();
+      document.getElementById("signin").classList.add("hidden");
+      document.getElementById("console").classList.remove("hidden");
+      return loadAll();
+    })
+    .catch(() => signOut());
+}
+</script>
+</body>
+</html>
